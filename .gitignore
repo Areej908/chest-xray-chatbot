@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+*.env
+*.venv/
+venv/
+.env/
+
+# Jupyter/IDE
+.ipynb_checkpoints/
+.idea/
+.vscode/
+.DS_Store
+
+# Data/Model files (exclude or use Git LFS)
+assets/uploads/  # User-uploaded files (don't track these)
+*.pth           # Exclude large model weights (or use Git LFS)
+*.h5            # Exclude Keras models (or use Git LFS)
+
+# Streamlit secrets
+.streamlit/secrets.toml  # Never commit secrets!
+
+# System files
+*.log
+*.tmp
+*.bak
+
+assets/uploads/
