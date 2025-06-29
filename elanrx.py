@@ -15,43 +15,40 @@ st.set_page_config(page_title="Chest X-ray Chatbot", page_icon="🩺")
 st.title("🩺 Chest X-ray Chatbot")
 st.markdown("Upload a chest X-ray or ask questions about common findings")
 
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Chat input moved to main level (outside tabs)
+prompt = st.chat_input("Ask about chest X-rays...")
+
 # Create tabs
 tab1, tab2 = st.tabs(["Chat", "Image Analysis"])
 
-# Chat tab
+# Chat tab - only contains message display
 with tab1:
-    # Initialize chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Display chat messages
+    # Display chat messages from history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Accept user input
-    if prompt := st.chat_input("Ask about chest X-rays..."):
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
+# Handle chat logic outside tabs but connected to the chat display
+if prompt:
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # Get response
+    response = get_response(prompt)
+    
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    # Rerun to update the chat display in the tab
+    st.rerun()
 
-        # Display user message
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Get response
-        response = get_response(prompt)
-
-        # Display assistant response
-        with st.chat_message("assistant"):
-            st.markdown(response)
-
-        # Add to history
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
-# Image Analysis tab
+# Image Analysis tab (unchanged)
 with tab2:
     st.header("Upload Chest X-ray for Analysis")
-
     uploaded_file = st.file_uploader(
         "Choose a chest X-ray image...",
         type=["jpg", "jpeg", "png"],
