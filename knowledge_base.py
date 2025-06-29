@@ -78,6 +78,7 @@ def get_response(query, detail_level="standard"):
     Returns X-ray findings and treatment options
     :param query: User's question (e.g., "pneumonia treatment")
     :param detail_level: "brief"|"standard"|"detailed"
+    :return: Formatted response string
     """
     query = query.lower().strip()
     
@@ -98,6 +99,7 @@ def get_response(query, detail_level="standard"):
     return _format_condition(condition, wants_treatment, detail_level)
 
 def _format_condition(condition, include_treatment, detail_level):
+    """Helper function to format the condition response"""
     data = CHEST_XRAY_KNOWLEDGE[condition]
     response = [
         f"🩺 {condition.upper()}",
@@ -110,23 +112,24 @@ def _format_condition(condition, include_treatment, detail_level):
         treatment = data.get("treatment")
         if not treatment:
             response.append("\n💊 TREATMENT: Not applicable")
-        elif isinstance(treatment, dict):  # For conditions with multiple treatment types
+        elif isinstance(treatment, dict):
             response.append("\n💊 TREATMENT OPTIONS:")
-            for subtype, options in treatment.items():  # Fixed: using 'subtype' consistently
-                response.append(f"\n  {subtype.capitalize()}:")  # Changed subtitle → subtype
+            for subtype, options in treatment.items():
+                response.append(f"\n  {subtype.capitalize()}:")
                 response.extend([f"   • {opt}" for opt in options])
         else:
             response.append("\n💊 TREATMENT:")
             response.extend([f" • {t}" for t in treatment])
     
-    return "\n".join(response)
-    
-    # Adjust detail level
+    # Adjust detail level (moved this before the return statement)
     if detail_level == "brief":
         return "\n".join(response[:4]) + "\n[...]"
-    return "\n".join(response)
+    elif detail_level == "detailed":
+        return "\n".join(response)
+    return "\n".join(response)  # default "standard" level
 
 # Example usage:
-print(get_response("pneumonia treatment", detail_level="detailed"))
-print(get_response("small pneumothorax"))
-print(get_response("normal x-ray findings"))
+if __name__ == "__main__":
+    print(get_response("pneumonia treatment", detail_level="detailed"))
+    print(get_response("small pneumothorax"))
+    print(get_response("normal x-ray findings"))
